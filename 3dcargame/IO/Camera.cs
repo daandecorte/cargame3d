@@ -12,7 +12,7 @@ namespace _3dcargame.IO
     internal class Camera
     {
         public Vector3 Target { get; set; }
-        public Vector3 Position { get; set; } = new Vector3(50f, 10f, 60f);
+        public Vector3 Position { get; set; } = new Vector3(50f, 5f, 60f);
         public Matrix Projection { get; set; }
         public Matrix View { get; set; }
 
