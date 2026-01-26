@@ -1,4 +1,6 @@
-﻿using _3dcargame.Levels;
+﻿
+using _3dcargame.IO;
+using _3dcargame.Levels;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -14,20 +16,9 @@ namespace _3dcargame
         private SpriteBatch _spriteBatch;
         //car
         Model model;
-        //keyboard
-        KeyboardState currentKeyboardState;
-        KeyboardState previousKeyboardState;
-
-        //mouse
-        float yaw = -MathHelper.PiOver2;
-        float pitch = 0;
-        MouseState prevMouseState;
 
         //camera
-        Vector3 camTarget;
-        Vector3 camPosition;
-        Matrix projectionMatrix;
-        Matrix viewMatrix;
+        Camera camera;
         Matrix worldMatrix;
 
         //basic rendering
@@ -36,9 +27,6 @@ namespace _3dcargame
         //geometrische   info
         VertexPositionColor[] triangleVertices;
         VertexBuffer vertexBuffer;
-
-        //orbit
-        bool orbit = false;
 
         //terrain
         VertexPositionColor[] terrainVertices;
@@ -57,26 +45,12 @@ namespace _3dcargame
         protected override void Initialize()
         {
             base.Initialize();
-            //level = new Level();
-            
-            //terrain
+
+            Camera.Instance.Init(GraphicsDevice);
+
+            worldMatrix = Matrix.CreateWorld(Camera.Instance.Target, Vector3.Forward, Vector3.Up);
+
             CreateTerrain();
-            Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-            prevMouseState = Mouse.GetState();
-
-            //setup camera
-            camPosition = new Vector3(50f, 10f, 60f);
-            camTarget = new Vector3(50f, 10f, 40f);
-
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView
-            (
-                MathHelper.ToRadians(80f), 
-                GraphicsDevice.DisplayMode.AspectRatio, 
-                1f, 
-                1000f
-            );
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f));
-            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
 
             //basic effect
             basicEffect = new BasicEffect(GraphicsDevice);
@@ -99,6 +73,7 @@ namespace _3dcargame
             vertexBuffer.SetData<VertexPositionColor>(triangleVertices);
 
             model = Content.Load<Model>("Car");
+            level = new Level(model, Camera.Instance.Target);
         }
 
         protected override void LoadContent()
@@ -107,88 +82,21 @@ namespace _3dcargame
 
             // TODO: use this.Content to load your game content here
         }
-        protected override void UnloadContent()
-        {
-            
-        }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || 
-                Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-            Vector3 newPos = camPosition;
-            Vector3 lookDirection = new Vector3((float)Math.Cos(yaw), 0f, (float)Math.Sin(yaw));
-            if(Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                newPos -= Vector3.Multiply(lookDirection, 1);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Z))
-            {
-                newPos += Vector3.Multiply(lookDirection, 1);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
-            {
-                newPos.Y -= 1f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Add))
-            {
-                newPos.Y += 1f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Q))
-            {
-                newPos += new Vector3(lookDirection.Z, 0f, -lookDirection.X);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                newPos += new Vector3(-lookDirection.Z, 0f, lookDirection.X);
-            }
-            camPosition = newPos;
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            currentKeyboardState = Keyboard.GetState();
-            if(currentKeyboardState.IsKeyUp(Keys.Space) && previousKeyboardState.IsKeyDown(Keys.Space))
-            {
-                while (Keyboard.GetState().IsKeyDown(Keys.Space)) {}
-                orbit = !orbit;
-            }
-            previousKeyboardState = Keyboard.GetState();
-
-            if(orbit)
-            { 
-                Matrix rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(1f));
-                camPosition = Vector3.Transform(camPosition, rotationMatrix);
-            }
-
-            //mouse movement
-            MouseState currentMouseState = Mouse.GetState();
-
-            float mouseSpeed = 0.005f;
-            float xDiff = currentMouseState.X - prevMouseState.X;
-            float yDiff = currentMouseState.Y - prevMouseState.Y;
-
-            yaw += xDiff * mouseSpeed;
-            pitch -= yDiff * mouseSpeed;
-
-            pitch = MathHelper.Clamp(pitch, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.01f);
-            Vector3 direction = new Vector3(
-            (float)(Math.Cos(yaw) * Math.Cos(pitch)),
-            (float)(Math.Sin(pitch)),
-            (float)(Math.Sin(yaw) * Math.Cos(pitch)));
-
-            camTarget = camPosition + direction;
-            Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
-
-            prevMouseState = Mouse.GetState();
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
-
-            //level.Update();
+            Camera.Instance.Update(GraphicsDevice);
+            Vector3 direction = Camera.Instance.Target - Camera.Instance.Position;
+            level.Update(Camera.Instance.Target + Vector3.Multiply(direction, 20));
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            basicEffect.Projection = projectionMatrix;
-            basicEffect.View = viewMatrix;
+            basicEffect.Projection = Camera.Instance.Projection;
+            basicEffect.View = Camera.Instance.View;
             basicEffect.World = Matrix.Identity;
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
@@ -197,18 +105,7 @@ namespace _3dcargame
             RasterizerState rasterizerState = new RasterizerState();
             rasterizerState.CullMode = CullMode.None;
             GraphicsDevice.RasterizerState = rasterizerState;
-            foreach (var mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.AmbientLightColor = new Vector3(1f, 0, 0);
-                    effect.View = viewMatrix;
-                    effect.World = worldMatrix;
-                    effect.Projection = projectionMatrix;
 
-                }
-                mesh.Draw();
-            }
             foreach (EffectPass pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
@@ -221,7 +118,7 @@ namespace _3dcargame
                 GraphicsDevice.SetVertexBuffer(vertexBuffer);
                 GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 3);
             }
-            //level.Draw();
+            level.Draw(Camera.Instance.View, Camera.Instance.Projection);
             base.Draw(gameTime);
         }
         private void CreateTerrain()
