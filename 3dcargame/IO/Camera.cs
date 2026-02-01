@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using _3dcargame.GameObjects;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -48,33 +49,7 @@ namespace _3dcargame.IO
         }
         public void Update(GraphicsDevice GraphicsDevice)
         {
-            Vector3 newPos = Position;
-            Vector3 lookDirection = new Vector3((float)Math.Cos(Yaw), 0f, (float)Math.Sin(Yaw));
-            if (Keyboard.GetState().IsKeyDown(Keys.S))
-            {
-                newPos -= Vector3.Multiply(lookDirection, 1);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Z))
-            {
-                newPos += Vector3.Multiply(lookDirection, 1);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Subtract))
-            {
-                newPos.Y -= 1f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Add))
-            {
-                newPos.Y += 1f;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Q))
-            {
-                newPos += new Vector3(lookDirection.Z, 0f, -lookDirection.X);
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.D))
-            {
-                newPos += new Vector3(-lookDirection.Z, 0f, lookDirection.X);
-            }
-            Position = newPos;
+            float distance = 15f;
 
             //mouse movement
             MouseState currentMouseState = Mouse.GetState();
@@ -91,10 +66,12 @@ namespace _3dcargame.IO
                 (float)(Math.Cos(Yaw) * Math.Cos(Pitch)),
                 (float)(Math.Sin(Pitch)),
                 (float)(Math.Sin(Yaw) * Math.Cos(Pitch))
-            );
+            ) * distance;
 
-            Target = Position + direction;
-            
+            Target = Player.Instance.Position;
+
+            Position = Target + direction;
+
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
             prevMouseState = Mouse.GetState();
             View = Matrix.CreateLookAt(Position, Target, Vector3.Up);

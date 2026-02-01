@@ -18,11 +18,11 @@ namespace _3dcargame.Levels
         {
             Init(model, position);
         }
-        public void Init(Model model, Vector3 position)
+        public void Init(Model playerModel, Vector3 position)
         {
-            //GameObjects.Add(new Player());
+            Player.Init(playerModel);
             GameObjects = new List<IGameObject>();
-            GameObjects.Add(new GameObject(model, position));
+            GameObjects.Add(Player.Instance);
         }
         public void Update(Vector3 direction)
         {

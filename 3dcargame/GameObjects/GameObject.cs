@@ -24,12 +24,12 @@ namespace _3dcargame.GameObjects
             this.Rotation = Vector3.Zero;
         }
 
-        public void Draw(Matrix viewMatrix, Matrix projectionMatrix)
+        public virtual void Draw(Matrix viewMatrix, Matrix projectionMatrix)
         {
             Position = new Vector3(Position.X, 0, Position.Z);
             Matrix worldMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(-90)) *
-                Matrix.CreateRotationY(MathHelper.ToRadians(180)) *
-                Matrix.CreateRotationZ(Rotation.Z) *
+                Matrix.CreateRotationY(Rotation.Y) *
+                Matrix.CreateRotationZ(MathHelper.ToRadians(0)) *
                 Matrix.CreateTranslation(Position);
 
             foreach (var mesh in Model.Meshes)
@@ -46,7 +46,7 @@ namespace _3dcargame.GameObjects
             }
         }
 
-        public void Update(Vector3 direction)
+        public virtual void Update(Vector3 direction)
         {
             Position = direction;
         }
