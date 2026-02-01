@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("3dcargame")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+af8c9b2434090e11be0c47a4cf9772370055e638")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+558c3b382a18511c60da43369973af7b0c40c93b")]
 [assembly: System.Reflection.AssemblyProductAttribute("3dcargame")]
 [assembly: System.Reflection.AssemblyTitleAttribute("3dcargame")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

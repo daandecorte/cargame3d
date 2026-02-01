@@ -20,6 +20,8 @@ namespace _3dcargame.IO
         public float Yaw { get; set; } = -MathHelper.PiOver2;
         public float Pitch { get; set; } = 0;
 
+        private float mouseIdleTimer = 0f;
+
         private MouseState prevMouseState;
 
         private static Camera instance;
@@ -47,10 +49,10 @@ namespace _3dcargame.IO
 
             prevMouseState = Mouse.GetState();
         }
-        public void Update(GraphicsDevice GraphicsDevice)
+        public void Update(GraphicsDevice GraphicsDevice, GameTime gameTime)
         {
             float distance = 15f;
-
+            
             //mouse movement
             MouseState currentMouseState = Mouse.GetState();
             float mouseSpeed = 0.005f;
@@ -60,7 +62,7 @@ namespace _3dcargame.IO
             Yaw += xDiff * mouseSpeed;
             Pitch -= yDiff * mouseSpeed;
             Pitch = MathHelper.Clamp(Pitch, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.01f);
-            
+
             Vector3 direction = new Vector3
             (
                 (float)(Math.Cos(Yaw) * Math.Cos(Pitch)),
@@ -72,6 +74,21 @@ namespace _3dcargame.IO
 
             Position = Target + direction;
 
+            if(prevMouseState!=currentMouseState)
+            {
+                mouseIdleTimer = 0f;
+            }
+            else
+            {
+                mouseIdleTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if(mouseIdleTimer>=1f)
+                {
+                    float y = -(Player.Instance.Rotation.Y + MathHelper.ToRadians(90));
+                    float angleDiff = MathHelper.WrapAngle(y - Yaw);
+                    Yaw += angleDiff * 0.1f;
+                    Yaw = MathHelper.WrapAngle(Yaw);
+                }
+            }
             Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
             prevMouseState = Mouse.GetState();
             View = Matrix.CreateLookAt(Position, Target, Vector3.Up);

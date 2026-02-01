@@ -63,7 +63,7 @@ namespace _3dcargame
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) Exit();
 
-            Camera.Instance.Update(GraphicsDevice);
+            Camera.Instance.Update(GraphicsDevice, gameTime);
             Vector3 direction = Camera.Instance.Target - Camera.Instance.Position;
             level.Update(Camera.Instance.Target + Vector3.Multiply(direction, 10));
             base.Update(gameTime);
