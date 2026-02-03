@@ -40,9 +40,14 @@ namespace _3dcargame
 
             Camera.Instance.Init(GraphicsDevice);
 
-            worldMatrix = Matrix.CreateWorld(Camera.Instance.Target, Vector3.Forward, Vector3.Up);
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
 
-            Terrain.Instance.Init(GraphicsDevice);
+            GraphicsDevice.RasterizerState = rasterizerState;
+
+            worldMatrix = Matrix.CreateWorld(Camera.Instance.Target, Vector3.Forward, Vector3.Up);
+            Texture2D terrainHeightMap = Content.Load<Texture2D>("heightMap");
+            Terrain.Instance.Init(GraphicsDevice, terrainHeightMap);
 
             //basic effect
             basicEffect = new BasicEffect(GraphicsDevice);

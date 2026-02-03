@@ -4,9 +4,11 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/DigitalSmile/Desktop/3dgame/3dcargame/3dcargame/Content/Car.fbx</File>
+    <File>C:/Users/ddcort/OneDrive - Ferranti Computer Systems nv/Desktop/test/cargame3d/3dcargame/Content/Car.fbx</File>
+    <File>C:/Users/ddcort/OneDrive - Ferranti Computer Systems nv/Desktop/test/cargame3d/3dcargame/Content/heightMap.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
   </DestFiles>
 </SourceFileCollection>
