@@ -27,7 +27,7 @@ namespace _3dcargame.GameObjects
 
         public virtual void Draw(Matrix viewMatrix, Matrix projectionMatrix)
         {
-            Matrix worldMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(-90)) *
+            Matrix worldMatrix = Matrix.CreateTranslation(0, -1f, 0) * Matrix.CreateRotationX(MathHelper.ToRadians(-90)) *
             Matrix.CreateRotationY(Rotation.Y) *
             Matrix.CreateRotationZ(MathHelper.ToRadians(0)) *
             Matrix.CreateTranslation(Position);

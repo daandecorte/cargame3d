@@ -18,6 +18,8 @@ namespace _3dcargame.GameObjects
 
         private Texture2D heightMap;
         private Color[] heightMapData;
+
+        private float scale = 2f;
         private Terrain() {}
 
         public void Init(GraphicsDevice graphics, Texture2D heightMap)
@@ -42,8 +44,10 @@ namespace _3dcargame.GameObjects
         }
         public float GroundLevel(Vector3 position)
         {
-            int x1 = (int)MathHelper.Clamp(position.X, 0, heightMap.Width - 2) ;
-            int y1 = (int)MathHelper.Clamp(position.Z, 0, heightMap.Height -2);
+            float gridX = position.X / scale;
+            float gridZ = position.Z / scale;
+            int x1 = (int)MathHelper.Clamp(gridX , 0, heightMap.Width - 2) ;
+            int y1 = (int)MathHelper.Clamp(gridZ , 0, heightMap.Height -2);
             int x2 = x1 + 1;
             int y2 = y1 + 1;
 
@@ -52,8 +56,8 @@ namespace _3dcargame.GameObjects
             float h3 = heightMapData[x1 + y2 * heightMap.Width].R / 10f;
             float h4 = heightMapData[x2 + y2 * heightMap.Width].R / 10f;
 
-            float xAmount = position.X - x1;
-            float yAmount = position.Z - y1;
+            float xAmount = gridX - x1;
+            float yAmount = gridZ - y1;
 
             return MathHelper.Lerp(MathHelper.Lerp(h1, h2, xAmount), MathHelper.Lerp(h3, h4, xAmount), yAmount);
         }
@@ -73,10 +77,10 @@ namespace _3dcargame.GameObjects
                     int heightBottomLeft = heightMapData[x + (y+1) * width].R/10;
                     int heightBottomRight = heightMapData[(x + 1) + (y+1) * width].R/10;
 
-                    Vector3 topLeft     = new Vector3(x, heightTopLeft, y);
-                    Vector3 topRight    = new Vector3(x + 1, heightTopRight, y);
-                    Vector3 bottomLeft  = new Vector3(x, heightBottomLeft, y + 1);
-                    Vector3 bottomRight = new Vector3(x + 1, heightBottomRight, y + 1);
+                    Vector3 topLeft     = new Vector3(x*scale, heightTopLeft, y * scale);
+                    Vector3 topRight    = new Vector3((x + 1) * scale, heightTopRight, y * scale);
+                    Vector3 bottomLeft  = new Vector3(x * scale, heightBottomLeft, (y + 1) * scale);
+                    Vector3 bottomRight = new Vector3((x + 1) * scale, heightBottomRight, (y + 1) * scale);
 
                     //driehoek 1
                     terrainVertices[i++] = new VertexPositionColor(topLeft, Color.DarkGreen);
