@@ -25,7 +25,7 @@ namespace _3dcargame.GameObjects
                 instance = new Player(model, Vector3.Zero);
             }
         }
-        public override void Update(Vector3 direction)
+        public override void Update()
         {
             Vector3 forward = new Vector3((float)Math.Sin(Rotation.Y), 0, (float)Math.Cos(Rotation.Y));
             float directionSign = Vector3.Dot(forward, Speed) >= 0 ? 1f : -1f;
@@ -53,6 +53,7 @@ namespace _3dcargame.GameObjects
             {
                 Speed = new Vector3(MathHelper.Lerp(Speed.X, 0, 0.05f), 0, MathHelper.Lerp(Speed.Z, 0, 0.05f));
             }
+            base.Update();
         }
         public override void Draw(Matrix viewMatrix, Matrix projectionMatrix)
         {

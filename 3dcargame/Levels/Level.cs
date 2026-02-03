@@ -28,7 +28,7 @@ namespace _3dcargame.Levels
         {
             foreach (var gameObject in GameObjects)
             {
-                gameObject.Update(direction);
+                gameObject.Update();
             }
         }
         public void Draw(Matrix viewMatrix, Matrix projectionMatrix)

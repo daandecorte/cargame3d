@@ -14,7 +14,7 @@ namespace _3dcargame.Interfaces
         Vector3 Position { get; set; }
         Vector3 Speed { get; set; }
         Vector3 Rotation { get; set; }
-        void Update(Vector3 direction);
+        void Update();
         void Draw(Matrix viewMatrix, Matrix projectionMatrix);
     }
 }

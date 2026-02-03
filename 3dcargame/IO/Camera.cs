@@ -60,7 +60,7 @@ namespace _3dcargame.IO
             float xDiff = currentMouseState.X - prevMouseState.X;
             float yDiff = currentMouseState.Y - prevMouseState.Y;
             Yaw += xDiff * mouseSpeed;
-            Pitch -= yDiff * mouseSpeed;
+            Pitch += yDiff * mouseSpeed;
             Pitch = MathHelper.Clamp(Pitch, -MathHelper.PiOver2 + 0.01f, MathHelper.PiOver2 - 0.01f);
 
             Vector3 direction = new Vector3

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace _3dcargame.GameObjects
         public Vector3 Position { get; set; }
         public Vector3 Speed { get; set; }
         public Vector3 Rotation { get; set; }
-
+        private float fallSpeed = 0;
         public GameObject(Model model, Vector3 position)
         {
             
@@ -26,11 +27,10 @@ namespace _3dcargame.GameObjects
 
         public virtual void Draw(Matrix viewMatrix, Matrix projectionMatrix)
         {
-            Position = new Vector3(Position.X, 0, Position.Z);
             Matrix worldMatrix = Matrix.CreateRotationX(MathHelper.ToRadians(-90)) *
-                Matrix.CreateRotationY(Rotation.Y) *
-                Matrix.CreateRotationZ(MathHelper.ToRadians(0)) *
-                Matrix.CreateTranslation(Position);
+            Matrix.CreateRotationY(Rotation.Y) *
+            Matrix.CreateRotationZ(MathHelper.ToRadians(0)) *
+            Matrix.CreateTranslation(Position);
 
             foreach (var mesh in Model.Meshes)
             {
@@ -46,9 +46,19 @@ namespace _3dcargame.GameObjects
             }
         }
 
-        public virtual void Update(Vector3 direction)
+        public virtual void Update()
         {
-            Position = direction;
+            float y = Terrain.Instance.GroundLevel(this.Position);
+            if(Position.Y<=y)
+            {
+                this.Position = new Vector3(this.Position.X, y, this.Position.Z);
+                if (fallSpeed > 0) fallSpeed -= 0.2f;
+            }
+            if(Position.Y>y)
+            {
+                fallSpeed += 0.02f;
+                this.Position += Vector3.Multiply(Vector3.Down, fallSpeed);
+            }
         }
     }
 }

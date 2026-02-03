@@ -40,12 +40,23 @@ namespace _3dcargame.GameObjects
 
             }
         }
-        public bool Collide(GameObject gameObject)
+        public float GroundLevel(Vector3 position)
         {
-            if (gameObject.Position.Y <= 0) return true;
-            return false;
-        }
+            int x1 = (int)MathHelper.Clamp(position.X, 0, heightMap.Width - 2) ;
+            int y1 = (int)MathHelper.Clamp(position.Z, 0, heightMap.Height -2);
+            int x2 = x1 + 1;
+            int y2 = y1 + 1;
 
+            float h1 = heightMapData[x1 + y1 * heightMap.Width].R / 10f;
+            float h2 = heightMapData[x2 + y1 * heightMap.Width].R / 10f;
+            float h3 = heightMapData[x1 + y2 * heightMap.Width].R / 10f;
+            float h4 = heightMapData[x2 + y2 * heightMap.Width].R / 10f;
+
+            float xAmount = position.X - x1;
+            float yAmount = position.Z - y1;
+
+            return MathHelper.Lerp(MathHelper.Lerp(h1, h2, xAmount), MathHelper.Lerp(h3, h4, xAmount), yAmount);
+        }
         private void CreateTerrain(GraphicsDevice GraphicsDevice)
         {
             int width = heightMap.Width;
